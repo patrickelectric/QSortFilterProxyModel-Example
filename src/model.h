@@ -1,6 +1,34 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QObject>
+
+class Something : public QObject
+{
+    Q_OBJECT
+public:
+    Something(int number = 0, QObject* parent = nullptr)
+    : QObject(parent)
+    , _number(number) {};
+
+    Something(const Something& something)
+    : QObject(something.parent())
+    , _number(something.foo()) {};
+
+    ~Something() = default;
+
+    Q_INVOKABLE int foo() const;
+
+    Something& operator=(const Something& other) {
+        _number = other.foo();
+        return *this;
+    }
+
+private:
+    int _number;
+};
+
+Q_DECLARE_METATYPE(Something)
 
 class Model : public QAbstractListModel
 {
@@ -9,7 +37,7 @@ public:
     Model(QObject* parent = nullptr);
 
     enum Roles {
-        Display,
+        SomethingRole,
     };
 
     QVariant data(const QModelIndex& index, int role) const override;
@@ -21,7 +49,7 @@ public:
         return _size;
     };
 
-    void append(const QString& text);
+    void append(Something something);
 
 signals:
     void countChanged();
@@ -33,7 +61,7 @@ private:
     int _categories = 0;
     QVector<int> _roles;
     QHash<int, QByteArray> _roleNames{
-        {{Model::Display}, {"display"}},
+        {{Model::SomethingRole}, {"something"}},
     };
     int _size = 0;
     QHash<int, QVector<QVariant>> _vectors;

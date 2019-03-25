@@ -3,6 +3,12 @@
 #include <QDebug>
 #include <QTimer>
 
+Q_INVOKABLE int Something::foo() const
+{
+    qDebug() << "Foo!";
+    return _number;
+}
+
 Model::Model(QObject* parent)
     : QAbstractListModel(parent)
 {
@@ -14,7 +20,7 @@ Model::Model(QObject* parent)
     auto timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this]{
         static int i = 0;
-        append(QString::number(i));
+        append(i);
         i++;
     });
     timer->start(100);
@@ -30,11 +36,11 @@ QVariant Model::data(const QModelIndex& index, int role) const
     return _vectors[role][indexRow];
 }
 
-void Model::append(const QString& text)
+void Model::append(Something something)
 {
     const int line = rowCount();
     beginInsertRows(QModelIndex(), line, line);
-    _vectors[Model::Display].append(text);
+    _vectors[Model::SomethingRole].append(QVariant::fromValue(something));
     _size++;
     const auto& indexRow = index(line);
     endInsertRows();

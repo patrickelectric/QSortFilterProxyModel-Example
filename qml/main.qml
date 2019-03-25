@@ -25,20 +25,8 @@ ApplicationWindow {
             currentIndex: count - 1
             model: provide.model
             delegate: Text {
-                text: display
+                text: something.foo()
             }
         }
-
-        ListView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            currentIndex: count - 1
-            model: provide.filteredModel
-            delegate: Text {
-                text: display
-            }
-        }
-
     }
 }
